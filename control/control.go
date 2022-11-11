@@ -51,6 +51,7 @@ func NewControl() Control {
 		5, 5,
 		make(chan *xapp.RMRParams),
 		influxdb2.NewClient("http://ricplt-influxdb.ricplt:8086", "client"),
+		//exampl: influxdb2.NewPoint("stat",map[string]string{"unit": "temperature"},map[string]interface{}{"avg": 24.5},time.Now())
 
 		make(map[string]bool),
 		make(map[string]bool),
