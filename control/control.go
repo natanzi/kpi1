@@ -22,8 +22,8 @@ type Control struct {
 	ranList []string //nodeB list
 	eventCreateExpired int32 //maximum time for the RIC Subscription Request event creation procedure in the E2 Node
 	eventDeleteExpired int32 //maximum time for the RIC Subscription Request event deletion procedure in the E2 Node
-	//rcChan                chan *xapp.RMRParams //channel for receiving rmr message
-	RMR    chan *xapp.RMRParams //channel for receiving rmr message
+	rcChan                chan *xapp.RMRParams //channel for receiving rmr message
+	//RMR    chan *xapp.RMRParams //channel for receiving rmr message
 	//client                *redis.Client        //redis client
 	eventCreateExpiredMap map[string]bool      //map for recording the RIC Subscription Request event creation procedure is expired or not
 	eventDeleteExpiredMap map[string]bool      //map for recording the RIC Subscription Request event deletion procedure is expired or not
@@ -44,52 +44,26 @@ func init() {
 	xapp.Logger.SetLevel(4)
 }
 
-var (
-	timeToWait           = "w10ms"
-	subsequentActionType = "continue"
-	actionType           = "report"
-	actionId             = int64(1)
-	seqId                = int64(1)
-	funcId               = int64(0)
-	hPort                = int64(8080)
-	rPort                = int64(4560)
-	clientEndpoint       = clientmodel.SubscriptionParamsClientEndpoint{Host: "service-ricxapp-xappkpimon-http.ricxapp", HTTPPort: &hPort, RMRPort: &rPort}
-)
-
-func (c Control) Consume(msg *xapp.RMRParams) error {
-	id := xapp.Rmr.GetRicMessageName(msg.Mtype)
-	xapp.Logger.Info(
-		"Message received: name=%s meid=%s subId=%d txid=%s len=%d",
-		id,
-		msg.Meid.RanName,
-		msg.SubId,
-		msg.Xid,
-		msg.PayloadLen,
-	)
-	c.RMR <- msg
-	return nil
-}
-
 func NewControl() Control {
+	str := os.Getenv("ranList")
 	create_db()
-	return Control{
+	return Control{strings.Split(str, ","),
+		5, 5,
 		make(chan *xapp.RMRParams),
 		influxdb2.NewClient("http://ricplt-influxdb.ricplt:8086", "client"),
-	}
+
+		make(map[string]bool),
+		make(map[string]bool),
+		&sync.Mutex{},
+		&sync.Mutex{}}
 }
 
-
 //func NewControl() Control {
-//	str := os.Getenv("ranList")
-//	return Control{strings.Split(str, ","),
-//		5, 5,
+//	create_db()
+//	return Control{
 //		make(chan *xapp.RMRParams),
 //		influxdb2.NewClient("http://ricplt-influxdb.ricplt:8086", "client"),
-//
-//		make(map[string]bool),
-//		make(map[string]bool),
-//		&sync.Mutex{},
-//		&sync.Mutex{}}
+//	}
 //}
 
 func create_db() {
@@ -147,11 +121,10 @@ func (c *Control) startTimerSubReq() {
 	}(timerSR)
 }
 
-//func (c *Control) Consume(rp *xapp.RMRParams) (err error) {
-//	//c.rcChan <- rp
-//	c.RMR <- rp
-//	return
-//}
+func (c *Control) Consume(rp *xapp.RMRParams) (err error) {
+	c.rcChan <- rp
+	return
+}
 
 func (c *Control) rmrSend(params *xapp.RMRParams) (err error) {
 	if !xapp.Rmr.Send(params, false) {
@@ -173,8 +146,7 @@ func (c *Control) rmrReplyToSender(params *xapp.RMRParams) (err error) {
 
 func (c *Control) controlLoop() {
 	for {
-		//msg := <-c.rcChan
-		msg := <-c.RMR
+		msg := <-c.rcChan
 		xapp.Logger.Debug("Received message type: %d", msg.Mtype)
 		log.Printf("Received message type: %d", msg.Mtype)
 		switch msg.Mtype {
@@ -699,12 +671,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 								ueMetrics.PRBUsageUL = ueResourceReportItem.PRBUsageUL
 							}
 							c.writeUeMetrics_db(ueMetrics)
-							//newUeJsonStr, err := json.Marshal(ueMetrics)
-							//if err != nil {
-								//xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-								//log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-								//continue
-							//}
+							newUeJsonStr, err := json.Marshal(ueMetrics)
+							if err != nil {
+								xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+								log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+								continue
+							}
 							//err = c.client.Set(strconv.FormatInt(ueID, 10), newUeJsonStr, 0).Err()
 							//if err != nil {
 								//xapp.Logger.Error("Failed to set UeMetrics into redis with UE ID [%s]: %v", ueID, err)
@@ -787,12 +759,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							}
 
 							c.writeUeMetrics_db(ueMetrics)
-							//newUeJsonStr, err := json.Marshal(ueMetrics)
-							//if err != nil {
-								//xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-								//log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-								//continue
-							//}
+							newUeJsonStr, err := json.Marshal(ueMetrics)
+							if err != nil {
+								xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+								log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+								continue
+							}
 							//err = c.client.Set(strconv.FormatInt(ueID, 10), newUeJsonStr, 0).Err()
 							//if err != nil {
 								//xapp.Logger.Error("Failed to set UeMetrics into redis with UE ID [%s]: %v", ueID, err)
@@ -873,12 +845,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 							c.writeUeMetrics_db(ueMetrics)
 							fmt.Println("/////passed write uemetrics")
-							//newUeJsonStr, err := json.Marshal(ueMetrics)
-							//if err != nil {
-								//xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-								//log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-								//continue
-							//}
+							newUeJsonStr, err := json.Marshal(ueMetrics)
+							if err != nil {
+								xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+								log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+								continue
+							}
 							//err = c.client.Set(strconv.FormatInt(ueID, 10), newUeJsonStr, 0).Err()
 							//if err != nil {
 								//xapp.Logger.Error("Failed to set UeMetrics into redis with UE ID [%s]: %v", ueID, err)
@@ -930,12 +902,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 				c.writeCellMetrics_db(cellMetrics)
 				fmt.Println("////passed write uemetrics")
-				//newCellJsonStr, err := json.Marshal(cellMetrics)
-				//if err != nil {
-					//xapp.Logger.Error("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
-					//log.Printf("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
-					//continue
-				//}
+				newCellJsonStr, err := json.Marshal(cellMetrics)
+				if err != nil {
+					xapp.Logger.Error("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
+					log.Printf("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
+					continue
+				}
 				//err = c.client.Set(cellIDHdr, newCellJsonStr, 0).Err()
 				//if err != nil {
 					//xapp.Logger.Error("Failed to set CellMetrics into redis with CellID [%s]: %v", cellIDHdr, err)
