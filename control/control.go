@@ -51,7 +51,10 @@ func NewControl() Control {
 		5, 5,
 		make(chan *xapp.RMRParams),
 		influxdb2.NewClient("http://ricplt-influxdb.ricplt:8086", "client"),
-		      }
+		make(map[string]bool),
+		make(map[string]bool),
+		&sync.Mutex{},
+		&sync.Mutex{}}
 }
 
 //func NewControl() Control {
