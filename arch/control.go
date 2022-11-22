@@ -639,15 +639,15 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							}
 
 							var ueMetrics *UeMetricsEntry
-							//if isUeExist, _ := c.client.Exists(strconv.FormatInt(ueID, 10)).Result(); isUeExist == 1 {
-							//	ueJsonStr, _ := c.client.Get(strconv.FormatInt(ueID, 10)).Result()
-							//	json.Unmarshal([]byte(ueJsonStr), ueMetrics)
-							//} else {
-							//	ueMetrics = &UeMetricsEntry{}
-							//}
-							//
-							//ueMetrics.ServingCellID = servingCellID
-							//
+							if isUeExist, _ := c.client.Exists(strconv.FormatInt(ueID, 10)).Result(); isUeExist == 1 {
+								ueJsonStr, _ := c.client.Get(strconv.FormatInt(ueID, 10)).Result()
+								json.Unmarshal([]byte(ueJsonStr), ueMetrics)
+							} else {
+								ueMetrics = &UeMetricsEntry{}
+							}
+							
+							ueMetrics.ServingCellID = servingCellID
+							
 							//ueMetrics.UeID = ueID
 							log.Printf("UeID: %d", ueID)
 							ueMetrics.ServingCellID = servingCellID
@@ -668,13 +668,14 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							if ueResourceReportItem.PRBUsageUL != -1 {
 								ueMetrics.PRBUsageUL = ueResourceReportItem.PRBUsageUL
 							}
+							fmt.Println("////////////ueMetrics before writedB=", ueMetrics)
 							c.writeUeMetrics_db(ueMetrics)
-							//newUeJsonStr, err := json.Marshal(ueMetrics)
-							//if err != nil {
-							//xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-							//log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-							//continue
-							//}
+							newUeJsonStr, err := json.Marshal(ueMetrics)
+							if err != nil {
+							xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+							log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+							continue
+							}
 							//err = c.client.Set(strconv.FormatInt(ueID, 10), newUeJsonStr, 0).Err()
 							//if err != nil {
 							//xapp.Logger.Error("Failed to set UeMetrics into redis with UE ID [%s]: %v", ueID, err)
@@ -756,13 +757,14 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 								}
 							}
 
+							fmt.Println("////////////ueMetrics before writedB=", ueMetrics)
 							c.writeUeMetrics_db(ueMetrics)
-							//newUeJsonStr, err := json.Marshal(ueMetrics)
-							//if err != nil {
-							//xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-							//log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-							//continue
-							//}
+							newUeJsonStr, err := json.Marshal(ueMetrics)
+							if err != nil {
+							xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+							log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+							continue
+							}
 							//err = c.client.Set(strconv.FormatInt(ueID, 10), newUeJsonStr, 0).Err()
 							//if err != nil {
 							//xapp.Logger.Error("Failed to set UeMetrics into redis with UE ID [%s]: %v", ueID, err)
@@ -843,12 +845,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 							c.writeUeMetrics_db(ueMetrics)
 							fmt.Println("/////passed write uemetrics")
-							//newUeJsonStr, err := json.Marshal(ueMetrics)
-							//if err != nil {
-							//xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-							//log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
-							//continue
-							//}
+							newUeJsonStr, err := json.Marshal(ueMetrics)
+							if err != nil {
+							xapp.Logger.Error("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+							log.Printf("Failed to marshal UeMetrics with UE ID [%s]: %v", ueID, err)
+							continue
+							}
 							//err = c.client.Set(strconv.FormatInt(ueID, 10), newUeJsonStr, 0).Err()
 							//if err != nil {
 							//xapp.Logger.Error("Failed to set UeMetrics into redis with UE ID [%s]: %v", ueID, err)
@@ -898,14 +900,15 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 					cellMetrics.AvailPRBUL = availPRBUL
 				}
 
+				fmt.Println("////////////cellMetrics before writedB=", cellMetrics)
 				c.writeCellMetrics_db(cellMetrics)
 				fmt.Println("////passed write uemetrics")
-				//newCellJsonStr, err := json.Marshal(cellMetrics)
-				//if err != nil {
-				//xapp.Logger.Error("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
-				//log.Printf("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
-				//continue
-				//}
+				newCellJsonStr, err := json.Marshal(cellMetrics)
+				if err != nil {
+				xapp.Logger.Error("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
+				log.Printf("Failed to marshal CellMetrics with CellID [%s]: %v", cellIDHdr, err)
+				continue
+				}
 				//err = c.client.Set(cellIDHdr, newCellJsonStr, 0).Err()
 				//if err != nil {
 				//xapp.Logger.Error("Failed to set CellMetrics into redis with CellID [%s]: %v", cellIDHdr, err)
