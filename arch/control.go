@@ -751,7 +751,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							log.Printf("UeID: %d", ueID)
 							ueMetrics.ServingCellID = servingCellID
 							log.Printf("ServingCellID: %s", ueMetrics.ServingCellID)
-							fmt.Println("/////////////after first write uemetrics ServingCellID: %s", ueMetrics.ServingCellID")
+							fmt.Println("/////////////after first write uemetrics ServingCellID: %s", ueMetrics.ServingCellID)
 
 							ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
 							ueMetrics.MeasTimeRF.TVnsec = timestamp.TVnsec
