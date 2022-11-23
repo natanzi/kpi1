@@ -446,7 +446,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						//ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
 						//ueMetrics.MeasTimeRF.TVnsec = timestamp.TVnsec
 						c.writeUeMetrics_db(ueMetrics)
-						fmt.Println("//////...............passed write................../////..................."
+						fmt.Println("//////...............passed write................../////...................")
 						
 						if cellID == cellIDHdr {
 							fmt.Println("//////cellID = true")
