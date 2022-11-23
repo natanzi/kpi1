@@ -302,6 +302,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		} else {
 			cellIDHdr = ""
 		}
+		var cellMetrics CellMetricsEntry
+		fmt.Println("///after var cellmetrics cellIDHdr = %d=", cellIDHdr)
+		cellMetrics.CellID = cellIDHdr
+		cellMetrics.MeasPeriodPDCP = 20
+		c.writeCellMetrics_db(cellMetrics)
+		fmt.Println("////passed write uemetrics")
 
 		if indHdrFormat1.PlmnID != nil {
 			fmt.Println("//////////////entered if indHdrFormat1.PlmnID ") 
@@ -429,15 +435,16 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							log.Printf("Failed to parse CellID in DU PF Container: %v", err)
 							continue
 						}
-						var ueMetrics *UeMetricsEntry
+						var ueMetrics UeMetricsEntry
 
 						//ueMetrics.UeID = ueID
 						//log.Printf("UeID: %d", ueID)
-						ueMetrics.cellID = cellID
-						fmt.Println("/////////////after first ueMetrics.CellID = CellID")
+						ueMetrics.MeasPeriodPDCP = 20
+						ueMetrics.ServingCellID = cellID
+						fmt.Println("/////////////after first ueMetrics.CellID = cellID")
 
-						ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
-						ueMetrics.MeasTimeRF.TVnsec = timestamp.TVnsec
+						//ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
+						//ueMetrics.MeasTimeRF.TVnsec = timestamp.TVnsec
 						c.writeUeMetrics_db(ueMetrics)
 						fmt.Println("//////...............passed write................../////..................."
 						
