@@ -695,15 +695,15 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 							var ueMetrics *UeMetricsEntry
 							fmt.Println("/////var ueMetrics defined/////////")
-							if isUeExist, _ := c.client.Exists(strconv.FormatInt(ueID, 10)).Result(); isUeExist == 1 {
-								ueJsonStr, _ := c.client.Get(strconv.FormatInt(ueID, 10)).Result()
-								json.Unmarshal([]byte(ueJsonStr), ueMetrics)
-							} else {
-								ueMetrics = &UeMetricsEntry{}
-							}
-							
+							//if isUeExist, _ := c.client.Exists(strconv.FormatInt(ueID, 10)).Result(); isUeExist == 1 {
+							//	ueJsonStr, _ := c.client.Get(strconv.FormatInt(ueID, 10)).Result()
+							//	json.Unmarshal([]byte(ueJsonStr), ueMetrics)
+							//} else {
+							//	ueMetrics = &UeMetricsEntry{}
+							//}
+
 							ueMetrics.ServingCellID = servingCellID
-							
+
 							//ueMetrics.UeID = ueID
 							log.Printf("UeID: %d", ueID)
 							ueMetrics.ServingCellID = servingCellID
