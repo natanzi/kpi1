@@ -393,9 +393,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 			log.Printf("PMContainer[%d]: ", i)
 
 			pmContainer := indMsgFormat1.PMContainers[i]
+			fmt.Println("//// pmContainer %s", pmContainer)
 
 			if pmContainer.PFContainer != nil {
+				fmt.Println("////////entered if pmContainer.PFContainer nil")
 				containerType = pmContainer.PFContainer.ContainerType
+				fmt.Println("//// in if pmContainer.PFContainer != nil containerType: %d", containerType)
 
 				log.Printf("PFContainerType: %d", containerType)
 
@@ -417,28 +420,37 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						log.Printf("nRCGI.nRCellID: %x", cellResourceReport.NRCGI.NRCellID.Buf)
 
 						cellID, err := e2sm.ParseNRCGI(cellResourceReport.NRCGI)
+						fmt.Println("//// cellID = e2sm.ParseNRCGI cellResourceReport.NRCGI: %s", cellID)
+						fmt.Println("//// err = e2sm.ParseNRCGI cellResourceReport.NRCGI: %s", err)
 						if err != nil {
 							xapp.Logger.Error("Failed to parse CellID in DU PF Container: %v", err)
 							log.Printf("Failed to parse CellID in DU PF Container: %v", err)
 							continue
 						}
 						if cellID == cellIDHdr {
+							fmt.Println("//////cellID = true")
 							flag = true
 						}
 
 						log.Printf("TotalofAvailablePRBsDL: %d", cellResourceReport.TotalofAvailablePRBs.DL)
+						fmt.Println("TotalofAvailablePRBsDL: %d", cellResourceReport.TotalofAvailablePRBs.DL)
 						log.Printf("TotalofAvailablePRBsUL: %d", cellResourceReport.TotalofAvailablePRBs.UL)
+						fmt.Println("TotalofAvailablePRBsUL: %d", cellResourceReport.TotalofAvailablePRBs.UL)
 
 						if flag {
 							availPRBDL = cellResourceReport.TotalofAvailablePRBs.DL
+							fmt.Println("if flag availPRBDL %d", availPRBDL)
 							availPRBUL = cellResourceReport.TotalofAvailablePRBs.UL
+							fmt.Println("if flag availPRBUL %d", availPRBUL)
 						}
 
 						servedPlmnPerCellCount := cellResourceReport.ServedPlmnPerCellCount
 						log.Printf("ServedPlmnPerCellCount: %d", servedPlmnPerCellCount)
+						fmt.Println("ServedPlmnPerCellCount: %d", servedPlmnPerCellCount)
 
 						for k := 0; k < servedPlmnPerCellCount; k++ {
 							log.Printf("ServedPlmnPerCell[%d]: ", k)
+							fmt.Println("ServedPlmnPerCell[%d]: ", k)
 
 							servedPlmnPerCell := cellResourceReport.ServedPlmnPerCells[k]
 
@@ -467,8 +479,11 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 										fQIPERSlicesPerPlmnPerCell := slicePerPlmnPerCell.FQIPERSlicesPerPlmnPerCells[m]
 
 										log.Printf("5QI: %d", fQIPERSlicesPerPlmnPerCell.FiveQI)
+										fmt.Println("5QI: %d", fQIPERSlicesPerPlmnPerCell.FiveQI)
 										log.Printf("PrbUsageDL: %d", fQIPERSlicesPerPlmnPerCell.PrbUsage.DL)
+										fmt.Println("PrbUsageDL: %d", fQIPERSlicesPerPlmnPerCell.PrbUsage.DL)
 										log.Printf("PrbUsageUL: %d", fQIPERSlicesPerPlmnPerCell.PrbUsage.UL)
+										fmt.Println("PrbUsageUL: %d", fQIPERSlicesPerPlmnPerCell.PrbUsage.UL)
 									}
 								}
 							}
@@ -476,6 +491,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							if servedPlmnPerCell.DUPMEPC != nil {
 								perQCIReportCount := servedPlmnPerCell.DUPMEPC.PerQCIReportCount
 								log.Printf("PerQCIReportCount: %d", perQCIReportCount)
+								fmt.Println("PerQCIReportCount: %d", perQCIReportCount)
 
 								for l := 0; l < perQCIReportCount; l++ {
 									log.Printf("PerQCIReports[%d]: ", l)
@@ -483,6 +499,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 									perQCIReport := servedPlmnPerCell.DUPMEPC.PerQCIReports[l]
 
 									log.Printf("QCI: %d", perQCIReport.QCI)
+									fmt.Println("QCI: %d", perQCIReport.QCI)
 									log.Printf("PrbUsageDL: %d", perQCIReport.PrbUsage.DL)
 									log.Printf("PrbUsageUL: %d", perQCIReport.PrbUsage.UL)
 								}
@@ -497,6 +514,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 					if oCUCP.GNBCUCPName != nil {
 						log.Printf("gNB-CU-CP Name: %x", oCUCP.GNBCUCPName.Buf)
+						fmt.Println("gNB-CU-CP Name: %x", oCUCP.GNBCUCPName.Buf)
 					}
 
 					log.Printf("NumberOfActiveUEs: %d", oCUCP.CUCPResourceStatus.NumberOfActiveUEs)
@@ -508,6 +526,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 					if oCUUP.GNBCUUPName != nil {
 						log.Printf("gNB-CU-UP Name: %x", oCUUP.GNBCUUPName.Buf)
+						fmt.Println("gNB-CU-UP Name: %x", oCUUP.GNBCUUPName.Buf)
 					}
 
 					cuUPPFContainerItemCount := oCUUP.CUUPPFContainerItemCount
@@ -534,6 +553,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							if err != nil {
 								xapp.Logger.Error("Failed to parse PlmnID in CU-UP PF Container: %v", err)
 								log.Printf("Failed to parse PlmnID in CU-UP PF Container: %v", err)
+								fmt.Println("Failed to parse PlmnID in CU-UP PF Container: %v", err)
 								continue
 							}
 
@@ -630,7 +650,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 					continue
 				}
 			}
-
+                        fmt.Println("///before if pmContainer.RANContainer %x", pmContainer.RANContainer)
 			if pmContainer.RANContainer != nil {
 				log.Printf("RANContainer: %x", pmContainer.RANContainer.Timestamp.Buf)
 				fmt.Println("/////////////entered if pmContainer.RANContainer  nil")
