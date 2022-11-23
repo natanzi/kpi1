@@ -432,8 +432,8 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						var ueMetrics *UeMetricsEntry
 
 						//ueMetrics.UeID = ueID
-						log.Printf("UeID: %d", ueID)
-						ueMetrics.CellID = CellID
+						//log.Printf("UeID: %d", ueID)
+						ueMetrics.cellID = cellID
 						fmt.Println("/////////////after first ueMetrics.CellID = CellID")
 
 						ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
