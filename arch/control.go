@@ -302,12 +302,12 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		} else {
 			cellIDHdr = ""
 		}
-		var cellMetrics CellMetricsEntry
-		fmt.Println("///after var cellmetrics cellIDHdr = %d=", cellIDHdr)
-		cellMetrics.CellID = cellIDHdr
-		cellMetrics.MeasPeriodPDCP = 20
-		c.writeCellMetrics_db(cellMetrics)
-		fmt.Println("////passed write uemetrics")
+		//var cellMetrics CellMetricsEntry
+		//fmt.Println("///after var cellmetrics cellIDHdr = %d=", cellIDHdr)
+		//cellMetrics.CellID = cellIDHdr
+		//cellMetrics.MeasPeriodPDCP = 20
+		//c.writeCellMetrics_db(cellMetrics)
+		//fmt.Println("////passed write uemetrics")
 
 		if indHdrFormat1.PlmnID != nil {
 			fmt.Println("//////////////entered if indHdrFormat1.PlmnID ") 
@@ -1006,7 +1006,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 	return nil
 }
 
-func (c *Control) writeUeMetrics_db(ueMetrics *UeMetricsEntry) {
+func (c *Control) writeUeMetrics_db(ueMetrics UeMetricsEntry) {
 	//Write UE metrics to InfluxDB using API
 	fmt.Println("////entered writeuemetrics func")
 	writeAPI := c.client.WriteAPIBlocking("my-org", "kpimon")
