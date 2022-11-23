@@ -429,6 +429,18 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							log.Printf("Failed to parse CellID in DU PF Container: %v", err)
 							continue
 						}
+						var ueMetrics *UeMetricsEntry
+
+						//ueMetrics.UeID = ueID
+						log.Printf("UeID: %d", ueID)
+						ueMetrics.CellID = CellID
+						fmt.Println("/////////////after first ueMetrics.CellID = CellID")
+
+						ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
+						ueMetrics.MeasTimeRF.TVnsec = timestamp.TVnsec
+						c.writeUeMetrics_db(ueMetrics)
+						fmt.Println("//////...............passed write................../////..................."
+						
 						if cellID == cellIDHdr {
 							fmt.Println("//////cellID = true")
 							flag = true
