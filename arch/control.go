@@ -400,6 +400,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 				log.Printf("PFContainerType: %d", containerType)
 
 				if containerType == 1 {
+					fmt.Println("/////////entered in for loop if containerType == 1 oDU")
 					log.Printf("oDU PF Container: ")
 
 					oDU := pmContainer.PFContainer.Container.(*ODUPFContainerType)
@@ -489,7 +490,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						}
 					}
 				} else if containerType == 2 {
-					fmt.Println("/////////entered in for loop else if containerType == 2")
+					fmt.Println("/////////entered in for loop else if containerType == 2 oCU-CP")
 					log.Printf("oCU-CP PF Container: ")
 
 					oCUCP := pmContainer.PFContainer.Container.(*OCUCPPFContainerType)
@@ -500,7 +501,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 					log.Printf("NumberOfActiveUEs: %d", oCUCP.CUCPResourceStatus.NumberOfActiveUEs)
 				} else if containerType == 3 {
-					fmt.Println("/////////entered in for loop else if containerType == 3")
+					fmt.Println("/////////entered in for loop else if containerType == 3 oCU-UP")
 					log.Printf("oCU-UP PF Container: ")
 
 					oCUUP := pmContainer.PFContainer.Container.(*OCUUPPFContainerType)
