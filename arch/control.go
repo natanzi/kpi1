@@ -167,6 +167,7 @@ func (c *Control) controlLoop() {
 }
 
 func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
+	fmt.Println("////////entered hadleIndication")
 	var e2ap *E2ap
 	var e2sm *E2sm
 
@@ -176,17 +177,27 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		log.Printf("Failed to decode RIC Indication message: %v", err)
 		return
 	}
-
+        
 	log.Printf("RIC Indication message from {%s} received", params.Meid.RanName)
+	fmt.Println("RIC Indication message from {%s} received", params.Meid.RanName)
 	log.Printf("RequestID: %d", indicationMsg.RequestID)
+	fmt.Println("RequestID: %d", indicationMsg.RequestID)
 	log.Printf("RequestSequenceNumber: %d", indicationMsg.RequestSequenceNumber)
+	fmt.Println("RequestSequenceNumber: %d", indicationMsg.RequestSequenceNumber)
 	log.Printf("FunctionID: %d", indicationMsg.FuncID)
+	fmt.Println("FunctionID: %d", indicationMsg.FuncID)
 	log.Printf("ActionID: %d", indicationMsg.ActionID)
+	fmt.Println("ActionID: %d", indicationMsg.ActionID)
 	log.Printf("IndicationSN: %d", indicationMsg.IndSN)
+	fmt.Println("IndicationSN: %d", indicationMsg.IndSN)
 	log.Printf("IndicationType: %d", indicationMsg.IndType)
+	fmt.Println("IndicationType: %d", indicationMsg.IndType)
 	log.Printf("IndicationHeader: %x", indicationMsg.IndHeader)
+	fmt.Println("IndicationHeader: %x", indicationMsg.IndHeader)
 	log.Printf("IndicationMessage: %x", indicationMsg.IndMessage)
+	fmt.Println("IndicationMessage: %x", indicationMsg.IndMessage)
 	log.Printf("CallProcessID: %x", indicationMsg.CallProcessID)
+	fmt.Println("CallProcessID: %x", indicationMsg.CallProcessID)
 
 	indicationHdr, err := e2sm.GetIndicationHeader(indicationMsg.IndHeader)
 	if err != nil {
@@ -199,15 +210,17 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 	var plmnIDHdr string
 	var sliceIDHdr int32
 	var fiveQIHdr int64
-
+        fmt.Println("//////////4 var defined")
 	log.Printf("-----------RIC Indication Header-----------")
 	if indicationHdr.IndHdrType == 1 {
+		fmt.Println("//////////entered  if indicationHdr.IndHdrType 1")
 		log.Printf("RIC Indication Header Format: %d", indicationHdr.IndHdrType)
 		indHdrFormat1 := indicationHdr.IndHdr.(*IndicationHeaderFormat1)
 
 		log.Printf("GlobalKPMnodeIDType: %d", indHdrFormat1.GlobalKPMnodeIDType)
 
 		if indHdrFormat1.GlobalKPMnodeIDType == 1 {
+			fmt.Println("//////////entered  if indHdrFormat1.GlobalKPMnodeIDType 1")
 			globalKPMnodegNBID := indHdrFormat1.GlobalKPMnodeID.(GlobalKPMnodegNBIDType)
 
 			globalgNBID := globalKPMnodegNBID.GlobalgNBID
@@ -227,6 +240,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 				log.Printf("gNB-DU ID: %x", globalKPMnodegNBID.GnbDUID.Buf)
 			}
 		} else if indHdrFormat1.GlobalKPMnodeIDType == 2 {
+			fmt.Println("//////////entered  else if indHdrFormat1.GlobalKPMnodeIDType 2")
 			globalKPMnodeengNBID := indHdrFormat1.GlobalKPMnodeID.(GlobalKPMnodeengNBIDType)
 
 			log.Printf("PlmnID: %x", globalKPMnodeengNBID.PlmnID.Buf)
@@ -236,6 +250,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 				log.Printf("en-gNB ID ID: %x, Unused: %d", engNBID.Buf, engNBID.BitsUnused)
 			}
 		} else if indHdrFormat1.GlobalKPMnodeIDType == 3 {
+			fmt.Println("//////////entered  else if indHdrFormat1.GlobalKPMnodeIDType 3")
 			globalKPMnodengeNBID := indHdrFormat1.GlobalKPMnodeID.(GlobalKPMnodengeNBIDType)
 
 			log.Printf("PlmnID: %x", globalKPMnodengeNBID.PlmnID.Buf)
@@ -251,6 +266,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 				log.Printf("ng-eNB ID ID: %x, Unused: %d", ngeNBID.Buf, ngeNBID.BitsUnused)
 			}
 		} else if indHdrFormat1.GlobalKPMnodeIDType == 4 {
+			fmt.Println("//////////entered  else if indHdrFormat1.GlobalKPMnodeIDType 4")
 			globalKPMnodeeNBID := indHdrFormat1.GlobalKPMnodeID.(GlobalKPMnodeeNBIDType)
 
 			log.Printf("PlmnID: %x", globalKPMnodeeNBID.PlmnID.Buf)
@@ -273,6 +289,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 		if indHdrFormat1.NRCGI != nil {
 
+			fmt.Println("//////////entered  if indHdrFormat1.NRCGI")
 			log.Printf("nRCGI.PlmnID: %x", indHdrFormat1.NRCGI.PlmnID.Buf)
 			log.Printf("nRCGI.NRCellID ID: %x, Unused: %d", indHdrFormat1.NRCGI.NRCellID.Buf, indHdrFormat1.NRCGI.NRCellID.BitsUnused)
 
@@ -287,6 +304,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		}
 
 		if indHdrFormat1.PlmnID != nil {
+			fmt.Println("//////////////entered if indHdrFormat1.PlmnID ") 
 			log.Printf("PlmnID: %x", indHdrFormat1.PlmnID.Buf)
 
 			plmnIDHdr, err = e2sm.ParsePLMNIdentity(indHdrFormat1.PlmnID.Buf, indHdrFormat1.PlmnID.Size)
@@ -300,6 +318,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		}
 
 		if indHdrFormat1.SliceID != nil {
+			fmt.Println("//////////////entered if indHdrFormat1.SliceID ") 
 			log.Printf("SST: %x", indHdrFormat1.SliceID.SST.Buf)
 
 			if indHdrFormat1.SliceID.SD != nil {
@@ -317,12 +336,15 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		}
 
 		if indHdrFormat1.FiveQI != -1 {
+			fmt.Println("//////////////entered if indHdrFormat1.FiveQI != -1") 
+			fmt.Println("5QI: %d", indHdrFormat1.FiveQI) 
 			log.Printf("5QI: %d", indHdrFormat1.FiveQI)
 		}
 		fiveQIHdr = indHdrFormat1.FiveQI
 
 		if indHdrFormat1.Qci != -1 {
 			log.Printf("QCI: %d", indHdrFormat1.Qci)
+			fmt.Println("QCI: %d", indHdrFormat1.Qci)
 		}
 	} else {
 		xapp.Logger.Error("Unknown RIC Indication Header Format: %d", indicationHdr.IndHdrType)
@@ -334,6 +356,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 	if err != nil {
 		xapp.Logger.Error("Failed to decode RIC Indication Message: %v", err)
 		log.Printf("Failed to decode RIC Indication Message: %v", err)
+		fmt.Println("//////////////entered indMsg, err = e2sm.GetIndicationMessage check ric indication failure") 
 		return
 	}
 
@@ -345,9 +368,11 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 	var timestampPRB *Timestamp
 	var availPRBDL int64
 	var availPRBUL int64
+	fmt.Println("//////////////passed 8 var in indication") 
 
 	log.Printf("-----------RIC Indication Message-----------")
 	log.Printf("StyleType: %d", indMsg.StyleType)
+	fmt.Println("----------RIC Indication Message-----------")
 	if indMsg.IndMsgType == 1 {
 		log.Printf("RIC Indication Message Format: %d", indMsg.IndMsgType)
 
@@ -356,6 +381,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 		log.Printf("PMContainerCount: %d", indMsgFormat1.PMContainerCount)
 
 		for i := 0; i < indMsgFormat1.PMContainerCount; i++ {
+			fmt.Println("/////////entered for i = 0 i indMsgFormat1.PMContainerCount")
 			flag = false
 			timestampPDCPBytes = nil
 			dlPDCPBytes = -1
@@ -463,6 +489,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						}
 					}
 				} else if containerType == 2 {
+					fmt.Println("/////////entered in for loop else if containerType == 2")
 					log.Printf("oCU-CP PF Container: ")
 
 					oCUCP := pmContainer.PFContainer.Container.(*OCUCPPFContainerType)
@@ -473,6 +500,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 					log.Printf("NumberOfActiveUEs: %d", oCUCP.CUCPResourceStatus.NumberOfActiveUEs)
 				} else if containerType == 3 {
+					fmt.Println("/////////entered in for loop else if containerType == 3")
 					log.Printf("oCU-UP PF Container: ")
 
 					oCUUP := pmContainer.PFContainer.Container.(*OCUUPPFContainerType)
@@ -595,6 +623,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						}
 					}
 				} else {
+					fmt.Println("/////////////else in for loop Unknown PF Container type")
 					xapp.Logger.Error("Unknown PF Container type: %d", containerType)
 					log.Printf("Unknown PF Container type: %d", containerType)
 					continue
@@ -603,6 +632,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 
 			if pmContainer.RANContainer != nil {
 				log.Printf("RANContainer: %x", pmContainer.RANContainer.Timestamp.Buf)
+				fmt.Println("/////////////entered if pmContainer.RANContainer  nil")
 
 				timestamp, _ := e2sm.ParseTimestamp(pmContainer.RANContainer.Timestamp.Buf, pmContainer.RANContainer.Timestamp.Size)
 				log.Printf("Timestamp=[sec: %d, nsec: %d]", timestamp.TVsec, timestamp.TVnsec)
@@ -668,7 +698,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							if ueResourceReportItem.PRBUsageUL != -1 {
 								ueMetrics.PRBUsageUL = ueResourceReportItem.PRBUsageUL
 							}
-							fmt.Println("////////////ueMetrics before writedB=", ueMetrics)
+							fmt.Println("////////////First ueMetrics before writedB= %s", ueMetrics)
 							c.writeUeMetrics_db(ueMetrics)
 							newUeJsonStr, err := json.Marshal(ueMetrics)
 							if err != nil {
@@ -685,6 +715,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						}
 					}
 				} else if containerType == 2 {
+					fmt.Println("/////////////after first write uemetrics else if containerType == 2")
 					log.Printf("CU-CP Usage Report: ")
 
 					oCUCPUE := pmContainer.RANContainer.Container.(CUCPUsageReportType)
@@ -720,6 +751,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 							log.Printf("UeID: %d", ueID)
 							ueMetrics.ServingCellID = servingCellID
 							log.Printf("ServingCellID: %s", ueMetrics.ServingCellID)
+							fmt.Println("/////////////after first write uemetrics ServingCellID: %s", ueMetrics.ServingCellID")
 
 							ueMetrics.MeasTimeRF.TVsec = timestamp.TVsec
 							ueMetrics.MeasTimeRF.TVnsec = timestamp.TVnsec
@@ -757,7 +789,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 								}
 							}
 
-							fmt.Println("////////////ueMetrics before writedB=", ueMetrics)
+							fmt.Println("////////////Second ueMetrics before writedB= %s", ueMetrics)
 							c.writeUeMetrics_db(ueMetrics)
 							newUeJsonStr, err := json.Marshal(ueMetrics)
 							if err != nil {
@@ -774,6 +806,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 						}
 					}
 				} else if containerType == 6 {
+					fmt.Println("/////////////after second write entered  else if containerType ==6")
 					log.Printf("CU-UP Usage Report: ")
 
 					oCUUPUE := pmContainer.RANContainer.Container.(CUUPUsageReportType)
@@ -843,6 +876,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 								}
 							}
 
+							fmt.Println("/////////////3rd write ueMetrics: %s", ueMetrics)
 							c.writeUeMetrics_db(ueMetrics)
 							fmt.Println("/////passed write uemetrics")
 							newUeJsonStr, err := json.Marshal(ueMetrics)
@@ -900,7 +934,7 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 					cellMetrics.AvailPRBUL = availPRBUL
 				}
 
-				fmt.Println("////////////cellMetrics before writedB=", cellMetrics)
+				fmt.Println("////////////First cellMetrics before writedB= %s", cellMetrics)
 				c.writeCellMetrics_db(cellMetrics)
 				fmt.Println("////passed write uemetrics")
 				newCellJsonStr, err := json.Marshal(cellMetrics)
@@ -920,9 +954,10 @@ func (c *Control) handleIndication(params *xapp.RMRParams) (err error) {
 	} else {
 		xapp.Logger.Error("Unknown RIC Indication Message Format: %d", indMsg.IndMsgType)
 		log.Printf("Unkonw RIC Indication Message Format: %d", indMsg.IndMsgType)
+		fmt.Println("Unkonw RIC Indication Message Format: %d", indMsg.IndMsgType)
 		return
 	}
-
+	fmt.Println("///////passed indication main and get to return nil")
 	return nil
 }
 
